@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 import datetime, time
 import urllib, json
-import requests
+import urllib2, os, sys
+#import requests
 
 #ElasticSearch Cluster to Monitor
 elasticServer = "server1"
@@ -66,7 +67,9 @@ def post_data(data):
     url = "http://"+elasticMonitoringCluster+":"+str(elasticMonitoringClusterPort)+"/"+elasticIndex+"-"+utc_datetime.strftime("%Y.%m.%d")+"/message"
     headers = {'content-type': 'application/json'}
     try:
-        response = requests.post(url, data=json.dumps(data), headers=headers)
+        req = urllib2.Request(url, headers=headers, data=json.dumps(data))
+        f = urllib2.urlopen(req)
+       # response = requests.post(url, data=json.dumps(data), headers=headers)
        # print  response.elapsed
     except Exception as e:
         print "Error:  {}".format(str(e))
@@ -79,13 +82,20 @@ def main():
     fetch_indexstats(clusterName)
 
 if __name__ == '__main__':
-   nextRun = 0
-   while True:
-       if time.time() >= nextRun:
-           nextRun = time.time() + interval
-           now = time.time()
-           main()
-           elapsed = time.time() - now
-           print "Total Elapsed Time: "+str(elapsed)
-           timeDiff = nextRun - time.time()
-           time.sleep(timeDiff)
+    try:
+        nextRun = 0
+        while True:
+                if time.time() >= nextRun:
+                        nextRun = time.time() + interval
+                        now = time.time()
+                        main()
+                        elapsed = time.time() - now
+                        print "Total Elapsed Time: "+str(elapsed)
+                        timeDiff = nextRun - time.time()
+                        time.sleep(timeDiff)
+    except KeyboardInterrupt:
+        print 'Interrupted'
+        try:
+            sys.exit(0)
+        except SystemExit:
+            os._exit(0)
