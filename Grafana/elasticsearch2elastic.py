@@ -40,7 +40,7 @@ def fetch_nodestats(clusterName):
     urlData = "http://"+elasticServer+":"+str(elasticServerPort)+"/_cat/nodes?v&h=n"
     response = urllib.urlopen(urlData)
     nodes = response.read()[ 1:-1].strip().split('\n')
-    for node  in nodes:
+    for node in nodes:
         urlData = "http://"+elasticServer+":"+str(elasticServerPort)+"/_nodes/"+node.rstrip()+"/stats"
         response = urllib.urlopen(urlData)
         jsonData = json.loads(response.read())
