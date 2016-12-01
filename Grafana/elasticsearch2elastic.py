@@ -54,7 +54,7 @@ def fetch_nodestats(clusterName):
 
 def fetch_indexstats(clusterName):
     utc_datetime = datetime.datetime.utcnow()
-    urlData = "http://10.208.195.108:9200/_stats"
+    urlData = "http://"+elasticServer+":"+str(elasticServerPort)+"/_stats"
     response = urllib.urlopen(urlData)
     jsonData = json.loads(response.read())
     jsonData['_all']['@timestamp'] = str(utc_datetime.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3])
