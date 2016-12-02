@@ -8,12 +8,12 @@ import os
 import sys
 
 # ElasticSearch Cluster to Monitor
-elasticServer = "server1"
+elasticServer = "http://server1:9200"
 interval = 60
 
 # ElasticSearch Cluster to Send Metrics
 elasticIndex = "elasticsearch_metrics"
-elasticMonitoringCluster = "server2"
+elasticMonitoringCluster = "http://server2:9200"
 
 
 def fetch_clusterhealth():
