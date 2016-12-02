@@ -74,7 +74,7 @@ def post_data(data):
         'index': elasticIndex,
         'index_period': utc_datetime.strftime("%Y.%m.%d"),
     }
-    url = "%(cluster)s/%(index)s_%(index_period)s/message" % url_parameters
+    url = "%(cluster)s/%(index)s-%(index_period)s/message" % url_parameters
     headers = {'content-type': 'application/json'}
     try:
         req = urllib2.Request(url, headers=headers, data=json.dumps(data))
