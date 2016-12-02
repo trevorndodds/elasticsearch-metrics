@@ -69,7 +69,12 @@ def fetch_indexstats(clusterName):
 
 def post_data(data):
     utc_datetime = datetime.datetime.utcnow()
-    url = "%s/%s/message" % (elasticMonitoringCluster, elasticIndex)
+    url_parameters = {
+        'cluster': elasticMonitoringCluster,
+        'index': elasticIndex,
+        'index_period': utc_datetime.strftime("%Y.%m.%d"),
+    }
+    url = "%(cluster)s/%(index)s_%(index_period)s/message" % url_parameters
     headers = {'content-type': 'application/json'}
     try:
         req = urllib2.Request(url, headers=headers, data=json.dumps(data))
