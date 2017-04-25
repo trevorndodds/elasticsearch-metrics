@@ -6,6 +6,8 @@ import json
 import urllib2
 import os
 import sys
+import argparse
+
 
 # ElasticSearch Cluster to Monitor
 elasticServer = os.environ.get('ES_METRICS_CLUSTER_URL', 'http://server1:9200')
@@ -14,6 +16,14 @@ interval = 60
 # ElasticSearch Cluster to Send Metrics
 elasticIndex = os.environ.get('ES_METRICS_INDEX_NAME', 'elasticsearch_metrics')
 elasticMonitoringCluster = os.environ.get('ES_METRICS_MONITORING_CLUSTER_URL', 'http://server2:9200')
+
+
+## Parse argument
+def parse_args():
+  parser = argparse.ArgumentParser(description='Process some integers.')
+  parser.add_argument('--interval', help='The interval send to ES, unit is second')
+  args = parser.parse_args()
+  return args
 
 
 def fetch_clusterhealth():
@@ -90,6 +100,15 @@ def main():
     fetch_indexstats(clusterName)
 
 if __name__ == '__main__':
+    # Parse argument
+    args = parse_args()
+
+    # If don't give interval paramter , default interval is 10s
+    if args.interval is not None:
+        interval = float(args.interval)
+
+    print "Interval: " + str(interval) + " s"
+
     try:
         nextRun = 0
         while True:
@@ -100,10 +119,15 @@ if __name__ == '__main__':
                         elapsed = time.time() - now
                         print "Total Elapsed Time: %s" % elapsed
                         timeDiff = nextRun - time.time()
-                        time.sleep(timeDiff)
+                        
+ 			# Check timediff , if timediff >=0 sleep, if < 0 send metrics to es
+    		        if timeDiff >= 0:
+                              time.sleep(timeDiff)
+    
     except KeyboardInterrupt:
         print 'Interrupted'
         try:
             sys.exit(0)
         except SystemExit:
             os._exit(0)
+
