@@ -27,15 +27,20 @@ def parse_args():
 
 
 def fetch_clusterhealth():
-    utc_datetime = datetime.datetime.utcnow()
-    endpoint = "/_cluster/health"
-    urlData = elasticServer + endpoint
-    response = urllib.urlopen(urlData)
-    jsonData = json.loads(response.read())
-    clusterName = jsonData['cluster_name']
-    jsonData['@timestamp'] = str(utc_datetime.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3])
-    post_data(jsonData)
-    return clusterName
+    try:
+        utc_datetime = datetime.datetime.utcnow()
+        endpoint = "/_cluster/health"
+        urlData = elasticServer + endpoint
+        response = urllib.urlopen(urlData)
+        jsonData = json.loads(response.read())
+        clusterName = jsonData['cluster_name']
+        jsonData['@timestamp'] = str(utc_datetime.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3])
+        post_data(jsonData)
+        return clusterName
+    except IOError as err:
+        print "IOError: Maybe can't connect to elasticsearch."
+        clusterName="unknown"
+        return clusterName
 
 
 def fetch_clusterstats():
@@ -115,15 +120,16 @@ if __name__ == '__main__':
                 if time.time() >= nextRun:
                         nextRun = time.time() + interval
                         now = time.time()
-                        main()
-                        elapsed = time.time() - now
-                        print "Total Elapsed Time: %s" % elapsed
-                        timeDiff = nextRun - time.time()
-                        
- 			# Check timediff , if timediff >=0 sleep, if < 0 send metrics to es
-    		        if timeDiff >= 0:
-                              time.sleep(timeDiff)
-    
+                        if fetch_clusterhealth() != "unknown":
+                            main()
+                            elapsed = time.time() - now
+                            print "Total Elapsed Time: %s" % elapsed
+                            timeDiff = nextRun - time.time()
+
+                            # Check timediff , if timediff >=0 sleep, if < 0 send metrics to es
+                            if timeDiff >= 0:
+                                  time.sleep(timeDiff)
+ 
     except KeyboardInterrupt:
         print 'Interrupted'
         try:
