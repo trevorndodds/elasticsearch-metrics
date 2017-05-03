@@ -108,7 +108,7 @@ if __name__ == '__main__':
     # Parse argument
     args = parse_args()
 
-    # If don't give interval paramter , default interval is 10s
+    # If don't give interval paramter , default interval is 60s
     if args.interval is not None:
         interval = float(args.interval)
 
