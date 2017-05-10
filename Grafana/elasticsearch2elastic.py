@@ -61,10 +61,13 @@ def fetch_nodestats(clusterName):
         response = urllib.urlopen(urlData)
         jsonData = json.loads(response.read())
         nodeID = jsonData['nodes'].keys()
-        jsonData['nodes'][nodeID[0]]['@timestamp'] = str(utc_datetime.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3])
-        jsonData['nodes'][nodeID[0]]['cluster_name'] = clusterName
-        newJsonData = jsonData['nodes'][nodeID[0]]
-        post_data(newJsonData)
+        try:
+            jsonData['nodes'][nodeID[0]]['@timestamp'] = str(utc_datetime.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3])
+            jsonData['nodes'][nodeID[0]]['cluster_name'] = clusterName
+            newJsonData = jsonData['nodes'][nodeID[0]]
+            post_data(newJsonData)
+        except:
+            continue
 
 
 def fetch_indexstats(clusterName):
