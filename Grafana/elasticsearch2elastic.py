@@ -9,7 +9,7 @@ import sys
 
 # ElasticSearch Cluster to Monitor
 elasticServer = os.environ.get('ES_METRICS_CLUSTER_URL', 'http://server1:9200')
-interval = os.environ.get('ES_METRICS_INTERVAL', 60)
+interval = int(os.environ.get('ES_METRICS_INTERVAL', '60'))
 
 # ElasticSearch Cluster to Send Metrics
 elasticIndex = os.environ.get('ES_METRICS_INDEX_NAME', 'elasticsearch_metrics')
