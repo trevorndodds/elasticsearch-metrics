@@ -28,10 +28,10 @@ def handle_urlopen(urlData):
         opener = urllib2.build_opener(handler)
         urllib2.install_opener(opener)
         response = urllib2.urlopen(urlData)
-		return response
+	return response
     else:
         response = urllib.urlopen(urlData)
-		return response
+	return response
 
 def fetch_clusterhealth():
     try:
