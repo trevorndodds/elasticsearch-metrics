@@ -16,15 +16,11 @@ elasticIndex = os.environ.get('ES_METRICS_INDEX_NAME', 'elasticsearch_metrics')
 elasticMonitoringCluster = os.environ.get('ES_METRICS_MONITORING_CLUSTER_URL', 'http://server2:9200')
 
 # Enable Elasticsearch Security
-# read_username and read_password for read ES cluster information
-# write_username and write_passowrd for write monitor metric to ES.
 es_security_enable = False
-read_username = "read_username"
-read_password = "read_password"
-write_username = "write_username"
-write_password = "write_password"
+username = "username"
+password = "password"
 
-def handle_urlopen(urlData, username, password):
+def handle_urlopen(urlData):
     if es_security_enable: 
         password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
         password_mgr.add_password(None, urlData, username, password)
@@ -42,7 +38,7 @@ def fetch_clusterhealth():
         utc_datetime = datetime.datetime.utcnow()
         endpoint = "/_cluster/health"
         urlData = elasticServer + endpoint
-        response = handle_urlopen(urlData,read_username,read_password)
+        response = handle_urlopen(urlData)
         jsonData = json.loads(response.read())
         clusterName = jsonData['cluster_name']
         jsonData['@timestamp'] = str(utc_datetime.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3])
@@ -64,7 +60,7 @@ def fetch_clusterstats():
     utc_datetime = datetime.datetime.utcnow()
     endpoint = "/_cluster/stats"
     urlData = elasticServer + endpoint
-    response = handle_urlopen(urlData,read_username,read_password)
+    response = handle_urlopen(urlData)
     jsonData = json.loads(response.read())
     jsonData['@timestamp'] = str(utc_datetime.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3])
     post_data(jsonData)
@@ -74,12 +70,12 @@ def fetch_nodestats(clusterName):
     utc_datetime = datetime.datetime.utcnow()
     endpoint = "/_cat/nodes?v&h=n"
     urlData = elasticServer + endpoint
-    response = handle_urlopen(urlData,read_username,read_password)
+    response = handle_urlopen(urlData)
     nodes = response.read()[1:-1].strip().split('\n')
     for node in nodes:
         endpoint = "/_nodes/%s/stats" % node.rstrip()
         urlData = elasticServer + endpoint
-        response = handle_urlopen(urlData,read_username,read_password)
+        response = handle_urlopen(urlData)
         jsonData = json.loads(response.read())
         nodeID = jsonData['nodes'].keys()
         try:
@@ -95,7 +91,7 @@ def fetch_indexstats(clusterName):
     utc_datetime = datetime.datetime.utcnow()
     endpoint = "/_stats"
     urlData = elasticServer + endpoint
-    response = handle_urlopen(urlData,read_username,read_password)
+    response = handle_urlopen(urlData)
     jsonData = json.loads(response.read())
     jsonData['_all']['@timestamp'] = str(utc_datetime.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3])
     jsonData['_all']['cluster_name'] = clusterName
@@ -112,7 +108,7 @@ def post_data(data):
         req = urllib2.Request(url, headers=headers, data=json.dumps(data))
         if es_security_enable:
             password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
-            password_mgr.add_password(None, url, write_username, write_password)
+            password_mgr.add_password(None, url, username, password)
             handler = urllib2.HTTPBasicAuthHandler(password_mgr)
             opener = urllib2.build_opener(handler)
             urllib2.install_opener(opener)
