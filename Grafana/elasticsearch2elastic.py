@@ -44,7 +44,7 @@ def fetch_clusterhealth():
         utc_datetime = datetime.datetime.utcnow()
         endpoint = "/_cluster/health"
         urlData = elasticServer + endpoint
-        response = handle_urlopen(urlData,read_username,read_password)
+        response = handle_urlopen(urlData)
         jsonData = json.loads(response.read())
         clusterName = jsonData['cluster_name']
         jsonData['@timestamp'] = str(utc_datetime.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3])
@@ -66,7 +66,7 @@ def fetch_clusterstats():
     utc_datetime = datetime.datetime.utcnow()
     endpoint = "/_cluster/stats"
     urlData = elasticServer + endpoint
-    response = handle_urlopen(urlData,read_username,read_password)
+    response = handle_urlopen(urlData)
     jsonData = json.loads(response.read())
     jsonData['@timestamp'] = str(utc_datetime.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3])
     post_data(jsonData)
@@ -76,12 +76,12 @@ def fetch_nodestats(clusterName):
     utc_datetime = datetime.datetime.utcnow()
     endpoint = "/_cat/nodes?v&h=n"
     urlData = elasticServer + endpoint
-    response = handle_urlopen(urlData,read_username,read_password)
+    response = handle_urlopen(urlData)
     nodes = response.read()[1:-1].strip().split('\n')
     for node in nodes:
         endpoint = "/_nodes/%s/stats" % node.rstrip()
         urlData = elasticServer + endpoint
-        response = handle_urlopen(urlData,read_username,read_password)
+        response = handle_urlopen(urlData)
         jsonData = json.loads(response.read())
         nodeID = jsonData['nodes'].keys()
         try:
@@ -97,7 +97,7 @@ def fetch_indexstats(clusterName):
     utc_datetime = datetime.datetime.utcnow()
     endpoint = "/_stats"
     urlData = elasticServer + endpoint
-    response = handle_urlopen(urlData,read_username,read_password)
+    response = handle_urlopen(urlData)
     jsonData = json.loads(response.read())
     jsonData['_all']['@timestamp'] = str(utc_datetime.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3])
     jsonData['_all']['cluster_name'] = clusterName
@@ -114,7 +114,7 @@ def post_data(data):
         req = urllib2.Request(url, headers=headers, data=json.dumps(data))
         if write_es_security_enable:
             password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
-            password_mgr.add_password(None, url, write_username, write_password)
+            password_mgr.add_password(None, url, username, password)
             handler = urllib2.HTTPBasicAuthHandler(password_mgr)
             opener = urllib2.build_opener(handler)
             urllib2.install_opener(opener)
