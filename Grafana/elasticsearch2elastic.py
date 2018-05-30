@@ -18,14 +18,16 @@ elasticMonitoringCluster = os.environ.get('ES_METRICS_MONITORING_CLUSTER_URL', '
 # Enable Elasticsearch Security
 # read_username and read_password for read ES cluster information
 # write_username and write_passowrd for write monitor metric to ES.
-es_security_enable = False
+read_es_security_enable = False
 read_username = "read_username"
 read_password = "read_password"
+
+write_es_security_enable = False
 write_username = "write_username"
 write_password = "write_password"
 
 def handle_urlopen(urlData, username, password):
-    if es_security_enable: 
+    if read_es_security_enable: 
         password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
         password_mgr.add_password(None, urlData, username, password)
         handler = urllib2.HTTPBasicAuthHandler(password_mgr)
@@ -110,7 +112,7 @@ def post_data(data):
     headers = {'content-type': 'application/json'}
     try:
         req = urllib2.Request(url, headers=headers, data=json.dumps(data))
-        if es_security_enable:
+        if write_es_security_enable:
             password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
             password_mgr.add_password(None, url, write_username, write_password)
             handler = urllib2.HTTPBasicAuthHandler(password_mgr)
