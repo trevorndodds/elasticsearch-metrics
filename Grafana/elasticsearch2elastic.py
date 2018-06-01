@@ -28,16 +28,22 @@ write_password = "write_password"
 
 def handle_urlopen(urlData, username, password):
     if read_es_security_enable: 
-        password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
+      try:
+	password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
         password_mgr.add_password(None, urlData, username, password)
         handler = urllib2.HTTPBasicAuthHandler(password_mgr)
         opener = urllib2.build_opener(handler)
         urllib2.install_opener(opener)
         response = urllib2.urlopen(urlData)
 	return response
+      except Exception as e:
+        print "Error:  {}".format(str(e))
     else:
+      try:
         response = urllib.urlopen(urlData)
-	return response
+        return response
+      except Exception as e:
+        print "Error:  {}".format(str(e))
 
 def fetch_clusterhealth():
     try:
