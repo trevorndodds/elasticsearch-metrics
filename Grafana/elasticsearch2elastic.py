@@ -26,11 +26,11 @@ write_es_security_enable = False
 write_username = "write_username"
 write_password = "write_password"
 
-def handle_urlopen(urlData, username, password):
+def handle_urlopen(urlData, read_username, read_password):
     if read_es_security_enable: 
       try:
 	password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
-        password_mgr.add_password(None, urlData, username, password)
+        password_mgr.add_password(None, urlData, read_password, read_password)
         handler = urllib2.HTTPBasicAuthHandler(password_mgr)
         opener = urllib2.build_opener(handler)
         urllib2.install_opener(opener)
@@ -120,7 +120,7 @@ def post_data(data):
         req = urllib2.Request(url, headers=headers, data=json.dumps(data))
         if write_es_security_enable:
             password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
-            password_mgr.add_password(None, url, username, password)
+            password_mgr.add_password(None, url, write_username, write_password)
             handler = urllib2.HTTPBasicAuthHandler(password_mgr)
             opener = urllib2.build_opener(handler)
             urllib2.install_opener(opener)
