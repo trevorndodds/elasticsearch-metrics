@@ -30,7 +30,7 @@ def handle_urlopen(urlData, read_username, read_password):
     if read_es_security_enable: 
       try:
 	password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
-        password_mgr.add_password(None, urlData, read_password, read_password)
+        password_mgr.add_password(None, urlData, read_username, read_password)
         handler = urllib2.HTTPBasicAuthHandler(password_mgr)
         opener = urllib2.build_opener(handler)
         urllib2.install_opener(opener)
@@ -50,7 +50,7 @@ def fetch_clusterhealth():
         utc_datetime = datetime.datetime.utcnow()
         endpoint = "/_cluster/health"
         urlData = elasticServer + endpoint
-        response = handle_urlopen(urlData)
+        response = handle_urlopen(urlData,read_username,read_password)
         jsonData = json.loads(response.read())
         clusterName = jsonData['cluster_name']
         jsonData['@timestamp'] = str(utc_datetime.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3])
@@ -72,7 +72,7 @@ def fetch_clusterstats():
     utc_datetime = datetime.datetime.utcnow()
     endpoint = "/_cluster/stats"
     urlData = elasticServer + endpoint
-    response = handle_urlopen(urlData)
+    response = handle_urlopen(urlData,read_username,read_password)
     jsonData = json.loads(response.read())
     jsonData['@timestamp'] = str(utc_datetime.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3])
     post_data(jsonData)
@@ -82,12 +82,12 @@ def fetch_nodestats(clusterName):
     utc_datetime = datetime.datetime.utcnow()
     endpoint = "/_cat/nodes?v&h=n"
     urlData = elasticServer + endpoint
-    response = handle_urlopen(urlData)
+    response = handle_urlopen(urlData,read_username,read_password)
     nodes = response.read()[1:-1].strip().split('\n')
     for node in nodes:
         endpoint = "/_nodes/%s/stats" % node.rstrip()
         urlData = elasticServer + endpoint
-        response = handle_urlopen(urlData)
+        response = handle_urlopen(urlData,read_username,read_password)
         jsonData = json.loads(response.read())
         nodeID = jsonData['nodes'].keys()
         try:
@@ -103,7 +103,7 @@ def fetch_indexstats(clusterName):
     utc_datetime = datetime.datetime.utcnow()
     endpoint = "/_stats"
     urlData = elasticServer + endpoint
-    response = handle_urlopen(urlData)
+    response = handle_urlopen(urlData,read_username,read_password)
     jsonData = json.loads(response.read())
     jsonData['_all']['@timestamp'] = str(utc_datetime.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3])
     jsonData['_all']['cluster_name'] = clusterName
