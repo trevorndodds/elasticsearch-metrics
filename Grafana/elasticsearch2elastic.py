@@ -37,13 +37,13 @@ def handle_urlopen(urlData, read_username, read_password):
         response = urllib2.urlopen(urlData)
 	return response
       except Exception as e:
-        print "Error:  {}".format(str(e))
+        print "Error:  {0}".format(str(e))
     else:
       try:
         response = urllib.urlopen(urlData)
         return response
       except Exception as e:
-        print "Error:  {}".format(str(e))
+        print "Error:  {0}".format(str(e))
 
 def fetch_clusterhealth():
     try:
@@ -128,7 +128,7 @@ def post_data(data):
         else:
             response = urllib2.urlopen(req)
     except Exception as e:
-        print "Error:  {}".format(str(e))
+        print "Error:  {0}".format(str(e))
 
 
 def main():
