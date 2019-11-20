@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import datetime
 import time
-import urllib
 import json
 import urllib2
 import os
@@ -40,7 +39,7 @@ def handle_urlopen(urlData, read_username, read_password):
         print "Error:  {0}".format(str(e))
     else:
       try:
-        response = urllib.urlopen(urlData)
+        response = urllib2.urlopen(urlData)
         return response
       except Exception as e:
         print "Error:  {0}".format(str(e))
